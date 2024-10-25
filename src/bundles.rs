@@ -4,7 +4,9 @@ use bevy::prelude::*;
 #[derive(Bundle)]
 pub struct PlayerBundle {
     pub player: Player,
+    pub health: Health,
     pub speed: Speed,
+    pub reload_time: ReloadTime,
     pub sprite_bundle: SpriteBundle,
 }
 

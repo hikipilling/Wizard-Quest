@@ -5,11 +5,12 @@ mod plugins;
 mod systems;
 
 use bevy::prelude::*;
-use plugins::{CollisionPlugin, EnemyPlugin, HealthPlugin, PlayerPlugin};
+use plugins::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
+        .add_plugins(HudPlugin)
         .add_plugins(PlayerPlugin)
         .add_plugins(EnemyPlugin)
         .add_plugins(CollisionPlugin)

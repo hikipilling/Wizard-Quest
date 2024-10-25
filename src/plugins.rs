@@ -35,3 +35,11 @@ impl Plugin for HealthPlugin {
         app.add_systems(Update, update_health_bars);
     }
 }
+
+pub struct HudPlugin;
+impl Plugin for HudPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn_hud);
+        app.add_systems(Update, update_hud);
+    }
+}
