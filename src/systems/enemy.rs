@@ -11,7 +11,7 @@ pub fn spawn_enemy(commands: &mut Commands, x: f32, y: f32) {
                 current: 10,
                 max: 10,
             },
-            speed: Speed(200.0),
+            speed: Speed(100.0),
             sprite_bundle: SpriteBundle {
                 sprite: Sprite {
                     color: Color::srgb(0.0, 0.0, 1.0),
@@ -74,5 +74,21 @@ pub fn update_health_bars(
 
             transform.translation.x = -60.0 * (1.0 - health_percentage) / 2.0;
         }
+    }
+}
+
+pub fn move_enemies(
+    mut enemy_query: Query<(&mut Transform, &Speed), With<Enemy>>,
+    player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
+    time: Res<Time>,
+) {
+    let player_transform = player_query.single();
+    let player_position = player_transform.translation.truncate();
+
+    for (mut enemy_transform, enemy_speed) in enemy_query.iter_mut() {
+        let enemy_position = enemy_transform.translation.truncate();
+        let direction = (player_position - enemy_position).normalize();
+
+        enemy_transform.translation += direction.extend(0.0) * enemy_speed.0 * time.delta_seconds();
     }
 }
