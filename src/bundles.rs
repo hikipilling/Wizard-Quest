@@ -25,4 +25,6 @@ pub struct EnemyBundle {
     pub speed: Speed,
     pub sprite_bundle: SpriteBundle,
     pub collider: Collider,
+    pub sidestep_mode: SidestepMode,
+    pub sidestep_timer: SidestepTimer,
 }

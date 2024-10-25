@@ -39,3 +39,13 @@ pub struct HealthText;
 pub struct ReloadTime {
     pub timer: Timer,
 }
+
+#[derive(Component, PartialEq)]
+pub enum SidestepMode {
+    Stationary,
+    Left,
+    Right,
+}
+
+#[derive(Component)]
+pub struct SidestepTimer(pub Timer);

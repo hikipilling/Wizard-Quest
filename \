@@ -1,3 +1,5 @@
+use std::vec;
+
 use crate::components::*;
 use crate::events::*;
 use bevy::prelude::*;
@@ -56,28 +58,12 @@ pub fn detect_collisions(
 
             if let Some((_, enemy_a_transform, enemy_a_collider)) = enemy_a {
                 for (_, enemy_b_transform, enemy_b_collider) in right {
-                    let collision =
-                        (enemy_a_transform.translation.x - enemy_b_transform.translation.x).abs()
-                            < (enemy_a_collider.size.x + enemy_b_collider.size.x) / 2.0
-                            && (enemy_a_transform.translation.y - enemy_b_transform.translation.y)
-                                .abs()
-                                < (enemy_a_collider.size.y + enemy_b_collider.size.y) / 2.0;
+                    let direction = (enemy_a_transform.translation.truncate()
+                        - enemy_b_transform.translation.truncate())
+                    .normalize();
 
-                    if collision {
-                        let direction = (enemy_a_transform.translation.truncate()
-                            - enemy_b_transform.translation.truncate())
-                        .normalize();
-
-                        let distance = enemy_a_transform
-                            .translation
-                            .truncate()
-                            .distance(enemy_b_transform.translation.truncate());
-
-                        enemy_a_transform.translation +=
-                            direction.extend(0.0) * (distance * 1.5) * time.delta_seconds();
-                        enemy_b_transform.translation +=
-                            direction.extend(0.0) * -(distance * 1.5) * time.delta_seconds();
-                    }
+                    enemy_a_transform.translation +=
+                        direction.extend(0.0) * 10 * time.delta_seconds();
                 }
             }
         }
