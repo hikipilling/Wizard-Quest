@@ -12,9 +12,10 @@ pub fn spawn_player(mut commands: Commands) {
             current: 10,
             max: 10,
         },
-        reload_time: ReloadTime {
-            timer: Timer::new(Duration::from_secs(1), TimerMode::Repeating),
-        },
+        reload_time: ReloadTime(Timer::new(
+            Duration::from_secs_f32(0.5),
+            TimerMode::Repeating,
+        )),
         sprite_bundle: SpriteBundle {
             sprite: Sprite {
                 color: Color::srgb(1.0, 0.0, 0.0),
@@ -23,6 +24,10 @@ pub fn spawn_player(mut commands: Commands) {
             },
             transform: Transform::from_xyz(0.0, 0.0, 0.0),
             ..default()
+        },
+        can_shoot: CanShoot,
+        collider: Collider {
+            size: Vec2::new(50.0, 50.0),
         },
     });
 
@@ -61,14 +66,14 @@ pub fn move_player(
 pub fn handle_shooting(
     mut commands: Commands,
     buttons: Res<ButtonInput<MouseButton>>,
-    mut player_query: Query<(&Transform, &mut ReloadTime), With<Player>>,
+    mut player_query: Query<(&Transform, &mut ReloadTime, Entity), With<Player>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     time: Res<Time>,
 ) {
-    let (player_transform, mut reload_time) = player_query.single_mut();
+    let (player_transform, mut reload_time, player_entity) = player_query.single_mut();
 
-    if reload_time.timer.finished() {
+    if reload_time.0.finished() {
         if !buttons.pressed(MouseButton::Left) {
             return;
         }
@@ -84,29 +89,16 @@ pub fn handle_shooting(
             let player_position = player_transform.translation.truncate();
             let direction = (cursor_position - player_position).normalize();
 
-            commands.spawn(ProjectileBundle {
-                projectile: Projectile {
-                    direction,
-                    friendly: true,
-                },
-                speed: Speed(400.0),
-                sprite_bundle: SpriteBundle {
-                    sprite: Sprite {
-                        color: Color::srgb(0.0, 1.0, 0.0),
-                        custom_size: Some(Vec2::new(10.0, 10.0)),
-                        ..default()
-                    },
-                    transform: Transform::from_xyz(player_position.x, player_position.y, 0.0),
-                    ..default()
-                },
-                collider: Collider {
-                    size: Vec2::new(10.0, 10.0),
-                },
-            });
+            super::shoot(
+                &mut commands,
+                player_position,
+                direction,
+                player_entity,
+                &mut reload_time.0,
+                &time,
+            );
         }
-
-        reload_time.timer.tick(time.delta());
     } else {
-        reload_time.timer.tick(time.delta());
+        reload_time.0.tick(time.delta());
     }
 }

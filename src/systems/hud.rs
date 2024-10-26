@@ -34,7 +34,7 @@ pub fn update_hud(
             text.sections[1].value = format!("Damage: {}\n", "placeholder");
             text.sections[2].value = format!(
                 "Fire rate: {}\n",
-                1 / reload_time.timer.duration().as_secs()
+                1.0 / reload_time.0.duration().as_secs_f32()
             );
         }
     }

@@ -28,6 +28,11 @@ pub fn spawn_enemy(commands: &mut Commands, x: f32, y: f32) {
                 Duration::from_secs_f32(1.0 - (random::<f32>() * 0.3) + 0.15),
                 TimerMode::Repeating,
             )),
+            reload_timer: ReloadTime(Timer::new(
+                Duration::from_secs_f32(1.0 - (random::<f32>() * 0.3) + 0.15),
+                TimerMode::Repeating,
+            )),
+            can_shoot: CanShoot,
         })
         .with_children(|parent| {
             parent
@@ -130,5 +135,28 @@ pub fn move_enemies(
         }
 
         sidestep_timer.0.tick(time.delta());
+    }
+}
+
+pub fn handle_shooting(
+    mut commands: Commands,
+    mut enemy_query: Query<(&Transform, Entity, &mut ReloadTime), With<Enemy>>,
+    player_query: Query<&Transform, With<Player>>,
+    time: Res<Time>,
+) {
+    let player_position = player_query.single().translation.truncate();
+
+    for (enemy_transform, entity, mut reload_timer) in enemy_query.iter_mut() {
+        let enemy_position = enemy_transform.translation.truncate();
+        let direction = (player_position - enemy_position).normalize();
+
+        super::shoot(
+            &mut commands,
+            enemy_position,
+            direction,
+            entity,
+            &mut reload_timer.0,
+            &time,
+        );
     }
 }

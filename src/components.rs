@@ -6,7 +6,7 @@ pub struct Player;
 #[derive(Component)]
 pub struct Projectile {
     pub direction: Vec2,
-    pub friendly: bool,
+    pub shot_by: Entity,
 }
 
 #[derive(Component)]
@@ -36,9 +36,7 @@ pub struct HealthBarBackground;
 pub struct HealthText;
 
 #[derive(Component)]
-pub struct ReloadTime {
-    pub timer: Timer,
-}
+pub struct ReloadTime(pub Timer);
 
 #[derive(Component, PartialEq)]
 pub enum SidestepMode {
@@ -49,3 +47,6 @@ pub enum SidestepMode {
 
 #[derive(Component)]
 pub struct SidestepTimer(pub Timer);
+
+#[derive(Component)]
+pub struct CanShoot;
